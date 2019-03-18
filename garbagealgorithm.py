@@ -36,20 +36,19 @@ class GeneticPlayer(BasePokerPlayer):
             community_card=gen_cards(community_card)
         )
         
-        act = 0
-        act += self.coeff[0] * self.normalize(self.curr_round, 0, 1000)
-        act += self.coeff[1] * self.normalize(self.curr_money_diff, -10000, 10000)
-        act += self.coeff[2] * self.normalize(self.curr_street, 1, 4)
-        act += self.coeff[3] * self.normalize(self.rng, 0, 10)
-        act += self.coeff[4] * self.normalize(self.win_rate, 0, 1)
-        act = self.normalize(act, -5, 5)
-        if act > 0.33 and len(valid_actions) == 3:
-            action = valid_actions[2]
-        elif act > -0.33:
-            action = valid_actions[1]
+        act = [0, 0, 0]
+        for i in range(3):
+            act[i] += self.coeff[i * 5 + 0] * self.normalize(self.curr_round, 0, 1000)
+            act[i] += self.coeff[i * 5 + 1] * self.normalize(self.curr_money_diff, -10000, 10000)
+            act[i] += self.coeff[i * 5 + 2] * self.normalize(self.curr_street, 1, 4)
+            act[i] += self.coeff[i * 5 + 3] * self.normalize(self.rng, 0, 10)
+            act[i] += self.coeff[i * 5 + 4] * self.normalize(self.win_rate, 0, 1)
+        if len(valid_actions) == 3:
+            action = valid_actions[act.index(max(act))]
         else:
-            action = valid_actions[0]
-        #print(action['action'])
+            #len = 2
+            action = valid_actions[act.index(max(act[:2]))]
+        print(action['action'])
         return action['action']
         '''
         if win_rate >= 0.66 and len(valid_actions) == 3:
@@ -104,7 +103,9 @@ class GeneticTrainer():
     
     def main(self):
         for i in range(10):
-            self.coeff += [[[random.random() - 0.5, random.random() - 0.5, random.random() - 0.5, random.random() - 0.5, random.random() - 0.5], 0]]
+            self.coeff += [[[random.random() - 0.5, random.random() - 0.5, random.random() - 0.5, random.random() - 0.5, random.random() - 0.5,
+                             random.random() - 0.5, random.random() - 0.5, random.random() - 0.5, random.random() - 0.5, random.random() - 0.5,
+                             random.random() - 0.5, random.random() - 0.5, random.random() - 0.5, random.random() - 0.5, random.random() - 0.5], 0]]
         print(self.coeff)
         for i in range(self.cycles):
             self.fight()
@@ -132,10 +133,10 @@ class GeneticTrainer():
     
     def cross(self, i, j):
         child = []
-        crossoverpt = random.randint(1, 3)
+        crossoverpt = random.randint(1, 13)
         for k in range(crossoverpt):
             child += [self.coeff[i][0][k]]
-        for k in range(crossoverpt, 5):
+        for k in range(crossoverpt, 15):
             child += [self.coeff[j][0][k]]
         return child
     
@@ -144,9 +145,11 @@ class GeneticTrainer():
             r = random.randint(0, 100)
             if r > 80:
                 #mutate
-                idx = random.randint(0, 4)
+                idx = random.randint(0, 14)
                 mult = (random.random() - 0.5) * 4
                 self.coeff[i][0][idx] *= mult
+                self.coeff[i][0][idx] = min(1, self.coeff[i][0][idx])
+                self.coeff[i][0][idx] = max(-1, self.coeff[i][0][idx])
                 
 def precompute():
     rate = {}
