@@ -1,3 +1,6 @@
+from pypokerengine.engine.action_checker import ActionChecker
+import pprint
+
 DIVIDER = "="*70
 
 def visualize_game_start(game_info, uuid=None):
@@ -59,7 +62,25 @@ def visualize_declare_action(valid_actions, hole_card, round_state, uuid=None):
     ls.append(visualize_round_state(round_state))
     ls.append(DIVIDER)
     return "\n".join(ls)
-
+    
+def visualize_declare_action2(valid_actions, hole_card, round_state, uuid=None):
+    ls = []
+    ls.append(_visualize_title("Declare your action", uuid))
+    ls.append(DIVIDER)
+    ls.append(_visualize_sub_title("valid actions"))
+    ls.append(_visualize_item(valid_actions[0]["action"]))
+    ls.append(_visualize_item("%s" % (valid_actions[1]["action"])))
+    if (len(valid_actions) == 3):
+        ls.append(_visualize_item("%s" % (
+            valid_actions[2]["action"] #[valid_actions[2]["amount"]["min"], valid_actions[2]["amount"]["max"]])
+        )))
+    ls.append(_visualize_sub_title("hole card"))
+    ls.append(_visualize_item(str(hole_card)))
+    ls.append(_visualize_sub_title("round state"))
+    ls.append(visualize_round_state(round_state))
+    ls.append(DIVIDER)
+    return "\n".join(ls)
+    
 def visualize_game_update(new_action, round_state, uuid=None):
     ls = []
     ls.append(_visualize_title("Game update", uuid))

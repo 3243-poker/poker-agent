@@ -9,6 +9,12 @@ from argparse import ArgumentParser
 
 """ =========== *Remember to import your agent!!! =========== """
 from randomplayer import RandomPlayer
+from raise_player import RaisedPlayer
+from honestplayer import HonestPlayer
+from trainedplayer import TrainedPlayer
+from consoleplayer import ConsolePlayer
+from callplayer import CallPlayer
+# from garbagealgorithm import GeneticPlayer
 # from smartwarrior import SmartWarrior
 """ ========================================================= """
 
@@ -18,9 +24,12 @@ $ python testperf.py -n1 "Random Warrior 1" -a1 RandomPlayer -n2 "Random Warrior
 """
 
 def testperf(agent_name1, agent1, agent_name2, agent2):		
+	
+	agent_name1 = "RandomPlayer";
+	agent_name2 = "TrainedPlayer";
 
 	# Init to play 500 games of 1000 rounds
-	num_game = 500
+	num_game = 10
 	max_round = 1000
 	initial_stack = 10000
 	smallblind_amount = 20
@@ -30,11 +39,12 @@ def testperf(agent_name1, agent1, agent_name2, agent2):
 	agent2_pot = 0
 
 	# Setting configuration
-	config = setup_config(max_round=max_round, initial_stack=initial_stack, small_blind_amount=smallblind_amount)
+	config = setup_config(max_round=1000, initial_stack=initial_stack, small_blind_amount=smallblind_amount)
 	
 	# Register players
-	config.register_player(name=agent_name1, algorithm=RandomPlayer())
-	config.register_player(name=agent_name2, algorithm=RandomPlayer())
+	config.register_player(name="RandomPlayer", algorithm=RandomPlayer())
+	config.register_player(name="TrainedPlayer", algorithm=HonestPlayer());
+	#config.register_player(name=agent_name2, algorithm=RaisedPlayer())
 	# config.register_player(name=agent_name1, algorithm=agent1())
 	# config.register_player(name=agent_name2, algorithm=agent2())
 	
@@ -43,6 +53,7 @@ def testperf(agent_name1, agent1, agent_name2, agent2):
 	for game in range(1, num_game+1):
 		print("Game number: ", game)
 		game_result = start_poker(config, verbose=0)
+		#print(game_result)
 		agent1_pot = agent1_pot + game_result['players'][0]['stack']
 		agent2_pot = agent2_pot + game_result['players'][1]['stack']
 
